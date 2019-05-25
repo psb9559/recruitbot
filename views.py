@@ -3,91 +3,116 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 import json
-#import urllib.parse
-#import datetime
-import time
-from .models import recruituser, recruitinfo
+import urllib.parse
+import urllib.request
+from .models import recruituser, recruitinfo, companyinfo
 import requests
+from datetime import datetime
+import time
 from bs4 import BeautifulSoup
 
 def get_subjects(): # 채용 정보 크롤링 함수
 	subjects = []
-	while True:
-		req = requests.get('http://www.saramin.co.kr/zf_user/search?cat_cd=404&company_cd=0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C9&panel_type=&search_optional_item=y&search_done=y&panel_count=y')
-		html = req.text
-		soup = BeautifulSoup(html, 'html.parser')
-   
-		divs1 = soup.find_all("div", {"class": "item_recruit"})
-		for company in divs1:
-			content = company.find("div", {"class": "area_job"}).find("h2", {"class": "job_tit"}).find("a")
-			company_content = content.get('title')
-			grade1 = company.find("div", {"class": "area_job"}).find("div", {"class": "job_date"})
-			grade2 = grade1.find("span", {"class": "date"})
-			company_grade = grade2.text
-			name = company.find("div", {"class": "area_corp"}).find("strong", {"class": "corp_name"}).find("a")
-			company_title = name.get('title')
-        	try:
-            	recruitinfo.objects.get(cmp_name=company_title)
-        	except:
-            	recruitinfo.objects.create(
-            	cmp_name = company_title,
-            	date = company_grade,
-            	recruit_content = company_content
-            	)
-        	# url을 받아서 url 안의 내용들을 크롤링 하는 소스
-        	url_received = company.find("h2", {"class": "job_tit"}).find("a")
-        	get_url = url_received.get('class href')
-        	result_url = str(get_url)
-        	subjects.append(result_url)
-			time.sleep(3600)
 
-    return subjects
+	req = requests.get('http://www.saramin.co.kr/zf_user/search?cat_cd=404&company_cd=0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C9&panel_type=&search_optional_item=y&search_done=y&panel_count=y')
+	html = req.text
+	soup = BeautifulSoup(html, 'html.parser')
+	divs1 = soup.find_all("div", {"class": "item_recruit"})
+	for company in divs1:
+		content = company.find("div", {"class": "area_job"}).find("h2", {"class": "job_tit"}).find("a")
+		company_content = content.get('title')
+		grade1 = company.find("div", {"class": "area_job"}).find("div", {"class": "job_date"})
+		grade2 = grade1.find("span", {"class": "date"})
+		company_grade = grade2.text
+		name = company.find("div", {"class": "area_corp"}).find("strong", {"class": "corp_name"}).find("a")
+		company_title = name.get('title')
+		try:
+			recruitinfo.objects.get(cmp_name=company_title)
+		except:
+			recruitinfo.objects.create(
+			cmp_name=company_title,
+			date=company_grade,
+			recruit_content=company_content
+			)
 
-result_url = ''
-entlist = []
+		get_value = company.get("value")
+		subjects.append(get_value)
+
+	return subjects
+
 entlist = get_subjects()
 
-view_list = []
-day_list = []
-url_list = []
-rank_list = []
+
 def get_rank():
-    for ent_url in entlist:
-        url_content = 'http://www.saramin.co.kr' + ent_url
-        html_result = requests.get(url_content)
-        result_txt = html_result.text
-        result_soup = BeautifulSoup(result_txt, 'html.parser')
-        view_num = result_soup.find("ul", {"class": "meta"}).find("li").find("strong") # 조회수 크롤링
-        result_view = int(view_num) # 조회수
-
-        view_day = result_soup.find("div", {"class": "info_timer"}).find("span", {"class": "day"})
-        result_day = int(view_day) # 남은 일수
-        url_list.append(url_content)
-        view_list.append(result_view)
-        day_list.append(result_day) # 크롤링한 url, 조회수, 남은 일수를 각각 리스트에 대입
-	for i in range(0, 40):
-		num1 = view_list[i]
-		num2 = day_list[i]
-		rank_num = num1 + num2
-		rank_list.append(rank_num)
+	get_list = []
+	for ent_url in entlist:
+		api_url = 'http://api.saramin.co.kr/job-search?id=' + ent_url + '&fields=count'
+		html_result = requests.get(api_url)
+		result_txt = html_result.text
+		result_soup = BeautifulSoup(result_txt, 'html.parser')
+		view_name = result_soup.find("company").find("name").text
+		job_type = result_soup.find("job-type").text
+		job_level = result_soup.find("experience-level").text
+		require_level = result_soup.find("required-education-level").text
 
 
+		read_cnt = result_soup.find("read-cnt").text
+		view_cnt = int(read_cnt)
+
+		apply_cnt = result_soup.find("apply-cnt").text
+		view_apply = int(apply_cnt)
+
+		keyword = result_soup.find('keyword').text
+		salary = result_soup.find("salary").text
 
 
+		view_date = result_soup.find("expiration-timestamp").text
+		since_timestamp = time.mktime(datetime.today().timetuple())
+		until_timestamp = int(view_date)
+
+		days = (datetime.fromtimestamp(until_timestamp) - datetime.fromtimestamp(since_timestamp)).days
+
+		act_num = result_soup.find("active").text
+		view_active = int(act_num)
+		companyinfo.objects.create(
+		comp_name=view_name,
+		j_type=job_type,
+		j_level=job_level,
+		r_level=require_level,
+		r_cnt=view_cnt,
+		a_cnt=view_apply,
+		k_word=keyword,
+		comp_salary=salary,
+		submit_date=days,
+		view_act=view_active
+		)
 
 
+	return get_list
+
+rank_list = get_rank()
+#
+# def get_name():
+# 	name_list = []
+# 	for p in recruitrank.objects.raw('SELECT * FROM seungbot_recruitbank ORDER BY result_num DESC'):
+# 		rank_name = p.c_name
+# 		ep = recruitinfo.object.get(cmp_name = rank_name)
+# 		if ep.cmp_name == rank_name:
+# 			name_list.append(rank_name)
+# 	return name_list
+#
+# bot_ans = get_name()
+#
 
 @csrf_exempt
 def message(request):
 	json_str = ((request.body).decode('utf-8'))
 	received_json_data = json.loads(json_str)
-	
 	try:
 		text = received_json_data['userRequest']['utterance']
 		s_text = received_json_data['action']['detailParams']['sys_text']['value']
 		user_key = received_json_data['userRequest']['user']['properties']['plusfriendUserKey']	
 	except KeyError:
-		# 비정상적인 JSON 요청
 		return JsonResponse({
 		"version": "2.0",
 			"template": {
@@ -177,4 +202,6 @@ def message(request):
 					]
 				} 
 			}
+
+
 	return JsonResponse(res)
