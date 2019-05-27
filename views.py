@@ -30,9 +30,9 @@ def get_subjects(): # 채용 정보 크롤링 함수
 			recruitinfo.objects.get(cmp_name=company_title)
 		except:
 			recruitinfo.objects.create(
-			cmp_name=company_title,
-			date=company_grade,
-			recruit_content=company_content
+			cmp_name = company_title,
+			date = company_grade,
+			recruit_content = company_content
 			)
 
 		get_value = company.get("value")
@@ -51,9 +51,13 @@ def get_rank():
 		result_txt = html_result.text
 		result_soup = BeautifulSoup(result_txt, 'html.parser')
 		view_name = result_soup.find("company").find("name").text
+		result_view = str(view_name)
 		job_type = result_soup.find("job-type").text
+		result_type = str(job_type)
 		job_level = result_soup.find("experience-level").text
+		result_level = str(job_level)
 		require_level = result_soup.find("required-education-level").text
+		result_require = str(require_level)
 
 
 		read_cnt = result_soup.find("read-cnt").text
@@ -63,7 +67,9 @@ def get_rank():
 		view_apply = int(apply_cnt)
 
 		keyword = result_soup.find('keyword').text
+		result_key = str(keyword)
 		salary = result_soup.find("salary").text
+		result_salary = str(salary)
 
 
 		view_date = result_soup.find("expiration-timestamp").text
@@ -74,35 +80,38 @@ def get_rank():
 
 		act_num = result_soup.find("active").text
 		view_active = int(act_num)
-		companyinfo.objects.create(
-		comp_name=view_name,
-		j_type=job_type,
-		j_level=job_level,
-		r_level=require_level,
-		r_cnt=view_cnt,
-		a_cnt=view_apply,
-		k_word=keyword,
-		comp_salary=salary,
-		submit_date=days,
-		view_act=view_active
-		)
+		try:
+			companyinfo.objects.get(comp_name=result_view)
+		except:
+			companyinfo.objects.create(
+			comp_name = result_view,
+			j_type = result_type,
+			j_level = result_level,
+			r_level = result_require,
+			r_cnt = view_cnt,
+			a_cnt = view_apply,
+			k_word = result_key,
+			comp_salary = result_salary,
+			submit_date = days,
+			view_act = view_active
+			)
 
 
 	return get_list
 
 rank_list = get_rank()
-#
-# def get_name():
-# 	name_list = []
-# 	for p in recruitrank.objects.raw('SELECT * FROM seungbot_recruitbank ORDER BY result_num DESC'):
-# 		rank_name = p.c_name
-# 		ep = recruitinfo.object.get(cmp_name = rank_name)
-# 		if ep.cmp_name == rank_name:
-# 			name_list.append(rank_name)
-# 	return name_list
-#
-# bot_ans = get_name()
-#
+
+def get_name():
+	name_list = []
+	for p in companyinfo.objects.raw('SELECT * FROM seungbot_companyinfo ORDER BY r_cnt DESC'):
+		rank_name = p.c_name
+		ep = recruitinfo.object.get(cmp_name = rank_name)
+		if ep.cmp_name == rank_name:
+			name_list.append(rank_name)
+	return name_list
+
+bot_ans = get_name()
+
 
 @csrf_exempt
 def message(request):
@@ -172,7 +181,7 @@ def message(request):
 			} 
 		}
 		if user_bot:
-			user_bot.set_salary(strtoint(s_text))
+			user_bot.set_salary(s_text)
 	elif s_text == "보여줘":
 		if user_bot:
 			res = {
@@ -181,13 +190,28 @@ def message(request):
 						"outputs": [
 							{
 								"simpleText": {
-									"text": "직군 :" + user.u_field  +"\n" + "학력 :" + user.u_education  +"\n" +"연봉 :" + str(user.salary)  +"\n" +"입력" 
+									"text": "직군 :" + user_bot.u_field  +"\n" + "학력 :" + user_bot.u_education  +"\n" +"연봉 :" + str(user_bot.salary)  +"\n" +"입력"
 							}
 						}
 					]
 				} 
 			}			
-	elif text == "경일게임아카데미" :
+	# elif text == "경일게임아카데미" :
+	# 	ep = recruitinfo.objects.get(cmp_name = text)
+	# 	if user_bot:
+	# 		res = {
+	# 			"version": "2.0",
+	# 				"template": {
+	# 					"outputs": [
+	# 						{
+	# 							"simpleText": {
+	# 								"text": "회사명 :" + ep.cmp_name  +"\n" + "마감날짜 :" + ep.date  +"\n" +"채용메시지 :" + ep.recruit_content  +"\n" +"크롤링 저장"
+	# 						}
+	# 					}
+	# 				]
+	# 			}
+	# 		}
+	elif text == "SI보여줘" :
 		ep = recruitinfo.objects.get(cmp_name = text)
 		if user_bot:
 			res = {
@@ -196,11 +220,11 @@ def message(request):
 						"outputs": [
 							{
 								"simpleText": {
-									"text": "회사명 :" + ep.cmp_name  +"\n" + "마감날짜 :" + ep.date  +"\n" +"채용메시지 :" + ep.recruit_content  +"\n" +"크롤링 저장" 
+									"text": "회사명 :" + ep.cmp_name  +"\n" + "마감날짜 :" + ep.date  +"\n" +"채용메시지 :" + ep.recruit_content  +"\n" +"크롤링 저장"
 							}
 						}
 					]
-				} 
+				}
 			}
 
 
