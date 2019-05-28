@@ -40,4 +40,31 @@ class companyinfo(models.Model):
 	submit_date = models.IntegerField(default=0)
 	view_act = models.IntegerField(default=1)
 
+class test(models.Model):
+	comp_name = models.CharField(primary_key=True, null=False, max_length=100)
+	j_type = models.CharField(max_length=20)
+	j_level = models.CharField(max_length=20)
+	r_level = models.CharField(max_length=20)
+	r_cnt = models.IntegerField(default=0)
+	a_cnt = models.IntegerField(default=0)
+	k_word = models.CharField(max_length=500)
+	comp_salary = models.CharField(max_length=30)
+	submit_date = models.IntegerField(default=0)
+	view_act = models.IntegerField(default=1)
+	field = models.CharField(max_length=20)
+
+class rank(models.Model):
+	comp_name = models.CharField(primary_key=True, null=False, max_length=100)
+	j_type = models.CharField(max_length=20)
+	j_level = models.CharField(max_length=20)
+	r_level = models.CharField(max_length=20)
+	r_cnt = models.IntegerField(default=0)
+	a_cnt = models.IntegerField(default=0)
+	comp_salary = models.CharField(max_length=30)
+	submit_date = models.IntegerField(default=0)
+	field = models.CharField(max_length=20)
+	result = models.FloatField(default=0)
+
+
+
 
