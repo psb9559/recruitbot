@@ -43,111 +43,111 @@ def message(request):
 	
 	user = User_table.get_or_create(user_key)
 	
-	if text == "웹개발":
+	if s_text == "웹개발":
 		res = {
 			"version": "2.0",
 				"template": {
 					"outputs": [
 						{
 							"simpleText": {
-								"text": "직군 "+ text +" 입력하셨습니다.\n 학력을 입력해주세요"
+								"text": "직군 "+ s_text +" 입력하셨습니다.\n 학력을 입력해주세요"
 						}
 					}
 				]
 			} 
 		}
 		if user:
-			user.set_field(text)
-	if text == "서버":
+			user.set_field(s_text)
+	if s_text == "서버":
 		res = {
 			"version": "2.0",
 				"template": {
 					"outputs": [
 						{
 							"simpleText": {
-								"text": "직군 "+ text +" 입력하셨습니다.\n 학력을 입력해주세요"
+								"text": "직군 "+ s_text +" 입력하셨습니다.\n 학력을 입력해주세요"
 						}
 					}
 				]
 			}
 		}
 		if user:
-			user.set_field(text)
-	if text == "시스템개발":
+			user.set_field(s_text)
+	if s_text == "시스템개발":
 		res = {
 			"version": "2.0",
 				"template": {
 					"outputs": [
 						{
 							"simpleText": {
-								"text": "직군 "+ text +" 입력하셨습니다.\n 학력을 입력해주세요"
+								"text": "직군 "+ s_text +" 입력하셨습니다.\n 학력을 입력해주세요"
 						}
 					}
 				]
 			}
 		}
 		if user:
-			user.set_field(text)
-	if text == "대졸":
+			user.set_field(s_text)
+	if s_text == "대졸":
 		res = {
 			"version": "2.0",
 				"template": {
 					"outputs": [
 						{
 							"simpleText": {
-								"text": "학력은 "+ text +" 입력하셨습니다.\n 연봉을 입력해주세요"
+								"text": "학력은 "+ s_text +" 입력하셨습니다.\n 연봉을 입력해주세요"
 						}
 					}
 				]
 			} 
 		}
 		if user:
-			user.set_education(text)
-	if text == "고졸":
+			user.set_education(s_text)
+	if s_text == "고졸":
 		res = {
 			"version": "2.0",
 				"template": {
 					"outputs": [
 						{
 							"simpleText": {
-								"text": "학력은 "+ text +" 입력하셨습니다.\n 연봉을 입력해주세요"
+								"text": "학력은 "+ s_text +" 입력하셨습니다.\n 연봉을 입력해주세요"
 						}
 					}
 				]
 			}
 		}
 		if user:
-			user.set_education(text)
-	if text == "초대졸":
+			user.set_education(s_text)
+	if s_text == "초대졸":
 		res = {
 			"version": "2.0",
 				"template": {
 					"outputs": [
 						{
 							"simpleText": {
-								"text": "학력은 "+ text +" 입력하셨습니다.\n 연봉을 입력해주세요"
+								"text": "학력은 "+ s_text +" 입력하셨습니다.\n 연봉을 입력해주세요"
 						}
 					}
 				]
 			}
 		}
 		if user:
-			user.set_education(text)
-	if text == "2000":
+			user.set_education(s_text)
+	if s_text == "2000":
 		res = {
 			"version": "2.0",
 				"template": {
 					"outputs": [
 						{
 							"simpleText": {
-								"text": "연봉 "+ text +" 입력하셨습니다.\n '보여줘'를 입력하여 입력된 내용 확인"
+								"text": "연봉 "+ s_text +" 입력하셨습니다.\n '보여줘'를 입력하여 입력된 내용 확인"
 						}
 					}
 				]
 			} 
 		}
 		if user:
-			user.set_salary(text)
+			user.set_salary(s_text)
 	if s_text == "3000":
 		res = {
 			"version": "2.0",
@@ -155,15 +155,15 @@ def message(request):
 					"outputs": [
 						{
 							"simpleText": {
-								"text": "연봉 "+ text +" 입력하셨습니다.\n '보여줘'를 입력하여 입력된 내용 확인"
+								"text": "연봉 "+ s_text +" 입력하셨습니다.\n '보여줘'를 입력하여 입력된 내용 확인"
 						}
 					}
 				]
 			}
 		}
 		if user:
-			user.set_salary(text)
-	if text == "2600":
+			user.set_salary(s_text)
+	if text == "4000":
 		res = {
 			"version": "2.0",
 				"template": {
@@ -193,26 +193,72 @@ def message(request):
 					]
 				} 
 			}
+
 	if s_text == "서버직군보여줘":
 		#r_text = 'server'
 		items = []
+		j_items = []
+		r_items = []
+		s_items = []
 		ep = new_recruit_info2.objects.filter(field="server").order_by("-score")
 		for k in ep:
 			c_name = k.comp_name
+			c_type = k.j_level
+			c_edu = k.r_level
+			c_sal = k.comp_salary
 			items.append(c_name)
+			j_items.append(c_type)
+			r_items.append(c_edu)
+			s_items.append(c_sal)
 		try:
 			res = {
 				"version": "2.0",
 				"template": {
-					"outputs": [
-						{
-							"simpleText": {
-								"text": "1위: " + items[0] + "\n" + "2위: " + items[1] + "\n" + "3위: " + items[2]
+						"outputs": [
+							{
+								"listCard": {
+									"header": {
+										"title": "서버 추천 기업 순위",
+										"imageUrl": "http://k.kakaocdn.net/dn/xsBdT/btqqIzbK4Hc/F39JI8XNVDMP9jPvoVdxl1/2x1.jpg"
+									},
+									"items": [
+										{
+											"title": "1위: " + items[0],
+											"description": j_items[0] + "," + r_items[0] + "," + s_items[0],
+											"imageUrl": "http://k.kakaocdn.net/dn/APR96/btqqH7zLanY/kD5mIPX7TdD2NAxgP29cC0/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EB%9D%BC%EC%9D%B4%EC%96%B8(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+											}
+										},
+										{
+											"title": "2위: " + items[1],
+											"description":  j_items[1] + "," + r_items[1] + "," + s_items[1],
+											"imageUrl": "http://k.kakaocdn.net/dn/N4Epz/btqqHCfF5II/a3kMRckYml1NLPEo7nqTmK/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EB%AC%B4%EC%A7%80(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+											}
+										},
+										{
+											"title": "3위: " + items[2],
+											"description": j_items[2] + "," + r_items[2] + "," + s_items[2],
+											"imageUrl": "http://k.kakaocdn.net/dn/bE8AKO/btqqFHI6vDQ/mWZGNbLIOlTv3oVF1gzXKK/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EC%96%B4%ED%94%BC%EC%B9%98"
+											}
+										}
+									],
+									"buttons": [
+										{
+											"label": "서버 직군 채용정보 더 보기",
+											"action": "webLink",
+											"webLinkUrl": "http://www.saramin.co.kr/zf_user/search?cat_cd=402&company_cd=0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C9&panel_type=&search_optional_item=y&search_done=y&panel_count=y"
+										}
+									]
+								}
 							}
-						}
-					]
+						]
+					}
 				}
-			}
 		except:
 			res = {
 				"version": "2.0",
@@ -229,23 +275,68 @@ def message(request):
 	if s_text == "웹직군보여줘":
 		# r_text = 'server'
 		items = []
+		j_items = []
+		r_items = []
+		s_items = []
 		ep = new_recruit_info2.objects.filter(field="web").order_by("-score")
 		for k in ep:
 			c_name = k.comp_name
+			c_type = k.j_level
+			c_edu = k.r_level
+			c_sal = k.comp_salary
 			items.append(c_name)
+			j_items.append(c_type)
+			r_items.append(c_edu)
+			s_items.append(c_sal)
 		try:
 			res = {
 				"version": "2.0",
 				"template": {
-					"outputs": [
-						{
-							"simpleText": {
-								"text": "1위: " + items[0] + "\n" + "2위: " + items[1] + "\n" + "3위: " + items[2]
+						"outputs": [
+							{
+								"listCard": {
+									"header": {
+										"title": "웹 추천 기업 순위",
+										"imageUrl": "http://k.kakaocdn.net/dn/xsBdT/btqqIzbK4Hc/F39JI8XNVDMP9jPvoVdxl1/2x1.jpg"
+									},
+									"items": [
+										{
+											"title": "1위: " + items[0],
+											"description": j_items[0] + "," + r_items[0] + "," + s_items[0],
+											"imageUrl": "http://k.kakaocdn.net/dn/APR96/btqqH7zLanY/kD5mIPX7TdD2NAxgP29cC0/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EB%9D%BC%EC%9D%B4%EC%96%B8(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+											}
+										},
+										{
+											"title": "2위: " + items[1],
+											"description":  j_items[1] + "," + r_items[1] + "," + s_items[1],
+											"imageUrl": "http://k.kakaocdn.net/dn/N4Epz/btqqHCfF5II/a3kMRckYml1NLPEo7nqTmK/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EB%AC%B4%EC%A7%80(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+											}
+										},
+										{
+											"title": "3위: " + items[2],
+											"description": j_items[2] + "," + r_items[2] + "," + s_items[2],
+											"imageUrl": "http://k.kakaocdn.net/dn/bE8AKO/btqqFHI6vDQ/mWZGNbLIOlTv3oVF1gzXKK/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EC%96%B4%ED%94%BC%EC%B9%98"
+											}
+										}
+									],
+									"buttons": [
+										{
+											"label": "웹 직군 채용정보 더 보기",
+											"action": "webLink",
+											"webLinkUrl": "http://www.saramin.co.kr/zf_user/search?cat_cd=404&company_cd=0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C9&panel_type=&search_optional_item=y&search_done=y&panel_count=y"
+										}
+									]
+								}
 							}
-						}
-					]
+						]
+					}
 				}
-			}
 		except:
 			res = {
 				"version": "2.0",
@@ -260,25 +351,69 @@ def message(request):
 				}
 			}
 	if s_text == "시스템직군보여줘":
-			# r_text = 'server'
 			items = []
+			j_items = []
+			r_items = []
+			s_items = []
 			ep = new_recruit_info2.objects.filter(field="system").order_by("-score")
 			for k in ep:
 				c_name = k.comp_name
+				c_type = k.j_level
+				c_edu = k.r_level
+				c_sal = k.comp_salary
 				items.append(c_name)
+				j_items.append(c_type)
+				r_items.append(c_edu)
+				s_items.append(c_sal)
 			try:
 				res = {
 					"version": "2.0",
 					"template": {
-						"outputs": [
-							{
-								"simpleText": {
-									"text": "1위: " + items[0] + "\n" + "2위: " + items[1] + "\n" + "3위: " + items[2]
+							"outputs": [
+								{
+									"listCard": {
+										"header": {
+											"title": "시스템 추천 기업 순위",
+											"imageUrl": "http://k.kakaocdn.net/dn/xsBdT/btqqIzbK4Hc/F39JI8XNVDMP9jPvoVdxl1/2x1.jpg"
+										},
+										"items": [
+											{
+												"title": "1위: " + items[0],
+												"description": j_items[0] + "," + r_items[0] + "," + s_items[0],
+												"imageUrl": "http://k.kakaocdn.net/dn/APR96/btqqH7zLanY/kD5mIPX7TdD2NAxgP29cC0/1x1.jpg",
+												"link": {
+													"web": "https://namu.wiki/w/%EB%9D%BC%EC%9D%B4%EC%96%B8(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+												}
+											},
+											{
+												"title": "2위: " + items[1],
+												"description": j_items[1] + "," + r_items[1] + "," + s_items[1],
+												"imageUrl": "http://k.kakaocdn.net/dn/N4Epz/btqqHCfF5II/a3kMRckYml1NLPEo7nqTmK/1x1.jpg",
+												"link": {
+													"web": "https://namu.wiki/w/%EB%AC%B4%EC%A7%80(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+												}
+											},
+											{
+												"title": "3위: " + items[2],
+												"description": j_items[2] + " 학력: " + r_items[2] + " 연봉: " + s_items[2],
+												"imageUrl": "http://k.kakaocdn.net/dn/bE8AKO/btqqFHI6vDQ/mWZGNbLIOlTv3oVF1gzXKK/1x1.jpg",
+												"link": {
+													"web": "https://namu.wiki/w/%EC%96%B4%ED%94%BC%EC%B9%98"
+												}
+											}
+										],
+										"buttons": [
+											{
+												"label": "시스템 직군 채용정보 더 보기",
+												"action": "webLink",
+												"webLinkUrl": "http://www.saramin.co.kr/zf_user/search?cat_cd=408&company_cd=0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C9&panel_type=&search_optional_item=y&search_done=y&panel_count=y"
+											}
+										]
+									}
 								}
-							}
-						]
+							]
+						}
 					}
-				}
 			except:
 				res = {
 					"version": "2.0",
@@ -308,8 +443,44 @@ def message(request):
 					"template": {
 						"outputs": [
 							{
-								"simpleText": {
-									"text": "1위: " + items[0] + " 조회수: " + cnt_items[0] + "\n" + "2위: " + items[1] + " 조회수: " + cnt_items[1] + "\n" + "3위: " + items[2] + " 조회수: " + cnt_items[2]
+								"listCard": {
+									"header": {
+										"title": "조회수 높은 기업 순위",
+										"imageUrl": "http://k.kakaocdn.net/dn/xsBdT/btqqIzbK4Hc/F39JI8XNVDMP9jPvoVdxl1/2x1.jpg"
+									},
+									"items": [
+										{
+											"title": "1위: " + items[0],
+											"description": "조회수: " + cnt_items[0],
+											"imageUrl": "http://k.kakaocdn.net/dn/APR96/btqqH7zLanY/kD5mIPX7TdD2NAxgP29cC0/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EB%9D%BC%EC%9D%B4%EC%96%B8(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+											}
+										},
+										{
+											"title": "2위: " + items[1],
+											"description":  "조회수: " + cnt_items[1],
+											"imageUrl": "http://k.kakaocdn.net/dn/N4Epz/btqqHCfF5II/a3kMRckYml1NLPEo7nqTmK/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EB%AC%B4%EC%A7%80(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+											}
+										},
+										{
+											"title": "3위: " + items[2],
+											"description": "조회수: " + cnt_items[2],
+											"imageUrl": "http://k.kakaocdn.net/dn/bE8AKO/btqqFHI6vDQ/mWZGNbLIOlTv3oVF1gzXKK/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EC%96%B4%ED%94%BC%EC%B9%98"
+											}
+										}
+									],
+									"buttons": [
+										{
+											"label": "채용정보 더 보기",
+											"action": "webLink",
+											"webLinkUrl": "http://www.saramin.co.kr/zf_user/search?company_cd=0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C9&cat_cd=404%2C408%2C402&panel_type=&search_optional_item=y&search_done=y&panel_count=y"
+										}
+									]
 								}
 							}
 						]
@@ -344,8 +515,44 @@ def message(request):
 					"template": {
 						"outputs": [
 							{
-								"simpleText": {
-									"text": "1위: " + items[0] + " 지원자수: " + cnt_items[0] + "\n" + "2위: " + items[1] + " 지원자수: " + cnt_items[1] + "\n" + "3위: " + items[2] + " 지원자수: " + cnt_items[2]
+								"listCard": {
+									"header": {
+										"title": "지원자수 높은 기업 순위",
+										"imageUrl": "http://k.kakaocdn.net/dn/xsBdT/btqqIzbK4Hc/F39JI8XNVDMP9jPvoVdxl1/2x1.jpg"
+									},
+									"items": [
+										{
+											"title": "1위: " + items[0],
+											"description": "지원자수: " + cnt_items[0],
+											"imageUrl": "http://k.kakaocdn.net/dn/APR96/btqqH7zLanY/kD5mIPX7TdD2NAxgP29cC0/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EB%9D%BC%EC%9D%B4%EC%96%B8(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+											}
+										},
+										{
+											"title": "2위: " + items[1],
+											"description":  "지원자수: " + cnt_items[1],
+											"imageUrl": "http://k.kakaocdn.net/dn/N4Epz/btqqHCfF5II/a3kMRckYml1NLPEo7nqTmK/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EB%AC%B4%EC%A7%80(%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%94%84%EB%A0%8C%EC%A6%88)"
+											}
+										},
+										{
+											"title": "3위: " + items[2],
+											"description": "지원자수: " + cnt_items[2],
+											"imageUrl": "http://k.kakaocdn.net/dn/bE8AKO/btqqFHI6vDQ/mWZGNbLIOlTv3oVF1gzXKK/1x1.jpg",
+											"link": {
+												"web": "https://namu.wiki/w/%EC%96%B4%ED%94%BC%EC%B9%98"
+											}
+										}
+									],
+									"buttons": [
+										{
+											"label": "채용정보 더 보기",
+											"action": "webLink",
+											"webLinkUrl": "http://www.saramin.co.kr/zf_user/search?company_cd=0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C9&cat_cd=404%2C408%2C402&panel_type=&search_optional_item=y&search_done=y&panel_count=y"
+										}
+									]
 								}
 							}
 						]
@@ -369,18 +576,4 @@ def message(request):
 	return JsonResponse(res)
 
 
-			# elif text == "㈜날리지큐브" or "매드업":
-	# 	# 	ep = recruitbot.objects.get(cmp_name = text)
-	# 	# 	if user:
-	# 	# 		res = {
-	# 	# 			"version": "2.0",
-	# 	# 				"template": {
-	# 	# 					"outputs": [
-	# 	# 						{
-	# 	# 							"simpleText": {
-	# 	# 								"text": "회사명 :" + ep.cmp_name  +"\n" + "마감날짜 :" + ep.date  +"\n" +"채용메시지 :" + ep.recruit_msg  +"\n" +"크롤링 저장"
-	# 	# 						}
-	# 	# 					}
-	# 	# 				]
-	# 	# 			}
-	# 	# 		}	return JsonResponse(res)
+
